@@ -6,12 +6,12 @@
             "type": "string",
             "defaultValue": "[guid(resourceGroup().id)]",
             "metadata": {
-                "description": "Name of App Service plan"
+                "description": "Name of App Service plan to be created"
             }
         },
         "HostingPlanSku": {
             "type": "string",
-            "defaultValue": "B3",
+            "defaultValue": "F1",
             "allowedValues": [
                 "F1",
                 "D1",
@@ -154,22 +154,22 @@
             }
         },
         "AzureOpenAITemperature": {
-            "type": "int",
-            "defaultValue": 0,
+            "type": "number",
+            "defaultValue": 0.8,
             "metadata": {
                 "description": "Azure OpenAI Temperature"
             }
         },
         "AzureOpenAITopP": {
-            "type": "int",
-            "defaultValue": 1,
+            "type": "float",
+            "defaultValue": 0.95,
             "metadata": {
                 "description": "Azure OpenAI Top P"
             }
         },
         "AzureOpenAIMaxTokens": {
             "type": "int",
-            "defaultValue": 1000,
+            "defaultValue": 440,
             "metadata": {
                 "description": "Azure OpenAI Max Tokens"
             }

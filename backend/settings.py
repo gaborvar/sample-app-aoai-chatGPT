@@ -41,11 +41,11 @@ class _UiSettings(BaseSettings):
         env_ignore_empty=True
     )
 
-    title: str = "Contoso"
+    title: str = "Jogimuki"
     logo: Optional[str] = None
     chat_logo: Optional[str] = None
-    chat_title: str = "Start chatting"
-    chat_description: str = "This chatbot is configured to answer your questions"
+    chat_title: str = "A Jogimuki az Ã–n rendelkezÃ©sÃ©re Ã¡ll"
+    chat_description: str = "Ez a chat segÃ­t kivÃ¡lasztani a legjobb Ã¼gyvÃ©di irodÃ¡t, aki jogi termÃ©szetÅ± Ã¼gyÃ©nek megoldÃ¡sÃ¡ban segÃ­tsÃ©gÃ©re lesz."
     favicon: str = "/favicon.ico"
     show_share_button: bool = True
     show_chat_history_button: bool = True
@@ -105,9 +105,9 @@ class _AzureOpenAISettings(BaseSettings):
     key: Optional[str] = None
     resource: Optional[str] = None
     endpoint: Optional[str] = None
-    temperature: float = 0
-    top_p: float = 0
-    max_tokens: int = 1000
+    temperature: float = 0.7
+    top_p: float = 0.95
+    max_tokens: int = 420
     stream: bool = True
     stop_sequence: Optional[List[str]] = None
     seed: Optional[int] = None
