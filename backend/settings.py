@@ -41,11 +41,11 @@ class _UiSettings(BaseSettings):
         env_ignore_empty=True
     )
 
-    title: str = "Jogimuki"
+    title: str = "Chatbot with data"
     logo: Optional[str] = None
     chat_logo: Optional[str] = None
-    chat_title: str = "A Jogimuki az Ã–n rendelkezÃ©sÃ©re Ã¡ll"
-    chat_description: str = "Ez a chat segÃ­t kivÃ¡lasztani a legjobb Ã¼gyvÃ©di irodÃ¡t, aki jogi termÃ©szetÅ± Ã¼gyÃ©nek megoldÃ¡sÃ¡ban segÃ­tsÃ©gÃ©re lesz."
+    chat_title: str = "Happy to assist!"
+    chat_description: str = "How can this chat be helpful?"
     favicon: str = "/favicon.ico"
     show_share_button: bool = True
     show_chat_history_button: bool = True
