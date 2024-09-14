@@ -118,13 +118,19 @@ def format_stream_response(chatCompletionChunk, history_metadata, apim_request_i
     }
 
     if len(chatCompletionChunk.choices) > 0:
+
+        ########### added for data field extraction
+
+        ### tempobj=chatCompletionChunk.choices[0].delta
+        ### if tempobj.role == "assistant" and tempobj.
+
         delta = chatCompletionChunk.choices[0].delta
         if delta:
-            if hasattr(delta, "context"):
+            if hasattr(delta, "context"):       #### "delta" can have role and content but not "context"  
                 messageObj = {"role": "tool", "content": json.dumps(delta.context)}
                 response_obj["choices"][0]["messages"].append(messageObj)
                 return response_obj
-            if delta.role == "assistant" and hasattr(delta, "context"):
+            if delta.role == "assistant" and hasattr(delta, "context"):     #### the case when delta has a context is already handled above.
                 messageObj = {
                     "role": "assistant",
                     "context": delta.context,

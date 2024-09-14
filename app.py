@@ -110,6 +110,7 @@ frontend_settings = {
 # Enable Microsoft Defender for Cloud Integration
 MS_DEFENDER_ENABLED = os.environ.get("MS_DEFENDER_ENABLED", "true").lower() == "true"
 
+data_from_chat = []     ### to store the list of contacts that the model parse from user input
 
 # Initialize Azure OpenAI Client
 async def init_openai_client():
@@ -173,6 +174,35 @@ async def init_openai_client():
         azure_openai_client = None
         raise e
 
+async def read_fields_from_chat(response):
+    global data_from_chat
+
+    ########## Handling structured data received from the model.
+    ########## 
+    # Assuming 'response' is the object returned from OpenAI API
+
+    #### if 'function_call' in response['choices'][0]['message'] and response['choices'][0]['message']['function_call']['name'] == "contactlog":
+    ###     contact = response['choices'][0]['message']['function_call']['arguments']
+
+        # Here, you can choose to store the JSON, or process it further
+
+    ###    print(f"Arguments: {contact}")
+        
+        # If you want to store the data in a list or DataFrame
+    ###    data_from_chat.append(contact)  # Store the JSON data
+    
+    ###    return True
+
+    return False
+
+async def persist_fields_from_chat (data_from_chat):
+#####  Save data for later processing. For now, sale to a file.
+#####  Consider is an email alert is also appropriate.
+
+    with open("data_from_chat.json", "w") as file:
+        json.dump(data_from_chat, file, indent=4)
+    
+    return
 
 async def init_cosmosdb_client():
     cosmos_conversation_client = None
@@ -368,12 +398,19 @@ async def complete_chat_request(request_body, request_headers):
         )
     else:
         response, apim_request_id = await send_chat_request(request_body, request_headers)
+        await read_fields_from_chat(response)
+
         history_metadata = request_body.get("history_metadata", {})
         return format_non_streaming_response(response, history_metadata, apim_request_id)
 
 
 async def stream_chat_request(request_body, request_headers):
     response, apim_request_id = await send_chat_request(request_body, request_headers)
+    print()
+    print (type(response))
+    print()
+    await read_fields_from_chat(response)
+
     history_metadata = request_body.get("history_metadata", {})
     
     async def generate():
