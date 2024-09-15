@@ -74,6 +74,23 @@ def generateFilterString(userToken):
     group_ids = ", ".join([obj["id"] for obj in userGroups])
     return f"{AZURE_SEARCH_PERMITTED_GROUPS_COLUMN}/any(g:search.in(g, '{group_ids}'))"
 
+def append_to_file(json_asstring):
+    filename = 'contactfound.txt'
+    json_data = json.loads(json_asstring)
+    tabbed_data = f"{json_data['firstname']}\t{json_data['lastname']}\t{json_data['phone']}\t{json_data['email']}\t{json_data['confirmedbyuser']}"
+
+    # Check if the file exists
+    if os.path.exists(filename):
+        # File exists, append the string as a new line
+        with open(filename, 'a') as file:
+            file.write(tabbed_data + '\n')
+    else:
+        # File does not exist, create it and write the string as a new line
+        with open(filename, 'w') as file:
+            file.write("Firstname\tLastname\tPhone\tEmail\tConfirmedByUser\n")
+            file.write(tabbed_data + '\n')
+
+
 
 def format_non_streaming_response(chatCompletion, history_metadata, apim_request_id):
     response_obj = {
@@ -87,6 +104,20 @@ def format_non_streaming_response(chatCompletion, history_metadata, apim_request
     }
 
     if len(chatCompletion.choices) > 0:
+
+        ######## extract fields through tool/functions arguments
+
+        if chatCompletion.choices[0].message.tool_calls:
+            dummytoolcall = chatCompletion.choices[0].message.tool_calls[0]
+            if dummytoolcall.function.name == 'contactdetails':
+                append_to_file (dummytoolcall.function.arguments)
+
+        #### todo: If contact is recorded, apparently the model does not issue a textual completion. Suppress disply of "null". 
+        # Check that the tool call is appropriately recorded in history. 
+        # Add a comment field, e.g. "call me only between 10 and 12 daily" 
+        # Return value to inform the model that the record has been accepted and routed to the colleague. Note hallucination about setting call preferences.
+        # Allow user to change their mind and remove from call records
+
         message = chatCompletion.choices[0].message
         if message:
             if hasattr(message, "context"):

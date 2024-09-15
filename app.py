@@ -112,6 +112,43 @@ MS_DEFENDER_ENABLED = os.environ.get("MS_DEFENDER_ENABLED", "true").lower() == "
 
 data_from_chat = []     ### to store the list of contacts that the model parse from user input
 
+toolsdef_for_callback = [
+    {
+        "type": "function",
+        "function": {
+            "name": "contactdetails",
+            "description": "Call this function with confirmed contact details of an user seeking a callback to check if the user is recorded",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "firstname": {
+                        "type": "string",
+                        "description": "The first name of the user seeking callback"
+                    },
+                    "lastname": {
+                        "type": "string",
+                        "description": "The family name of the user seeking callback"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "description": "The phone number of the user seeking callback"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "The email address of the user seeking callback"
+                    },
+                    "confirmedbyuser": {
+                        "type": "boolean",
+                        "description": "This confirms that the user reviewed and approved their contact details"
+                    }
+                },
+                "additionalProperties": False,          # this is added in response to an errer, notdtocumented. "strict" had to be removed for same reason.
+                "required": ["firstname", "lastname", "phone", "email", "confirmedbyuser"]
+            }
+        }
+    }
+]
+
 # Initialize Azure OpenAI Client
 async def init_openai_client():
     azure_openai_client = None
@@ -281,7 +318,8 @@ def prepare_model_args(request_body, request_headers):
         "stop": app_settings.azure_openai.stop_sequence,
         "stream": app_settings.azure_openai.stream,
         "model": app_settings.azure_openai.model,
-        "user": user_json
+        "user": user_json,
+        "tools": toolsdef_for_callback      #### added for field extraction
     }
 
     if app_settings.datasource:
