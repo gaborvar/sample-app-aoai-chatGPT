@@ -1,4 +1,3 @@
-Firstname	Lastname	Phone	Email	ConfirmedByUser
-Béla	Nagy	06 20 956 5566	bela@gmail.com	True
-Zalán	Német	22-568745	embe@gmail.hu	True
-Ferenc	Képes	06 36 566995	gheoferenc@sajatail.hu	True
+Firstname	Lastname	Phone	Email	ConfirmedByUser	Contactpreference
+Éva	Nagy	70-8956985	nagynagy@postaszolg.hu	TRUE	Csak délelõtt
+Béla	Nagy	06 52 956852	fhfgd@skjhf.com	TRUE	Délelõtt

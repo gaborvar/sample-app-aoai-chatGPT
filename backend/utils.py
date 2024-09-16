@@ -77,17 +77,17 @@ def generateFilterString(userToken):
 def append_to_file(json_asstring):
     filename = 'contactfound.txt'
     json_data = json.loads(json_asstring)
-    tabbed_data = f"{json_data['firstname']}\t{json_data['lastname']}\t{json_data['phone']}\t{json_data['email']}\t{json_data['confirmedbyuser']}"
+    tabbed_data = f"{json_data['firstname']}\t{json_data['lastname']}\t{json_data['phone']}\t{json_data['email']}\t{json_data['confirmedbyuser']}\t{json_data['contactpreference']}"
 
     # Check if the file exists
     if os.path.exists(filename):
         # File exists, append the string as a new line
-        with open(filename, 'a') as file:
+        with open(filename, 'a', encoding='windows-1250') as file:
             file.write(tabbed_data + '\n')
     else:
         # File does not exist, create it and write the string as a new line
-        with open(filename, 'w') as file:
-            file.write("Firstname\tLastname\tPhone\tEmail\tConfirmedByUser\n")
+        with open(filename, 'w', encoding='windows-1250') as file:
+            file.write("Firstname\tLastname\tPhone\tEmail\tConfirmedByUser\tContactpreference\n")
             file.write(tabbed_data + '\n')
 
 
@@ -106,19 +106,32 @@ def format_non_streaming_response(chatCompletion, history_metadata, apim_request
     if len(chatCompletion.choices) > 0:
 
         ######## extract fields through tool/functions arguments
-
+        dummytoolcall=None
         if chatCompletion.choices[0].message.tool_calls:
             dummytoolcall = chatCompletion.choices[0].message.tool_calls[0]
             if dummytoolcall.function.name == 'contactdetails':
                 append_to_file (dummytoolcall.function.arguments)
 
-        #### todo: If contact is recorded, apparently the model does not issue a textual completion. Suppress disply of "null". 
+                function_call_result_message = {
+                    "role": "tool",
+                    "content": json.dumps({
+                        "Accepted": True
+                    }),
+                    "tool_call_id": dummytoolcall.id
+                }
+
+        #### todo: 
+        # Done: If the contact is recorded, apparently the model does not issue a textual completion. Suppress disply of "null". 
         # Check that the tool call is appropriately recorded in history. 
         # Add a comment field, e.g. "call me only between 10 and 12 daily" 
         # Return value to inform the model that the record has been accepted and routed to the colleague. Note hallucination about setting call preferences.
         # Allow user to change their mind and remove from call records
 
         message = chatCompletion.choices[0].message
+
+        if message.content is None and getattr(dummytoolcall, 'function', None):
+            message.content = "Data recorded."
+
         if message:
             if hasattr(message, "context"):
                 response_obj["choices"][0]["messages"].append(
@@ -157,7 +170,7 @@ def format_stream_response(chatCompletionChunk, history_metadata, apim_request_i
 
         delta = chatCompletionChunk.choices[0].delta
         if delta:
-            if hasattr(delta, "context"):       #### "delta" can have role and content but not "context"  
+            if hasattr(delta, "context"):       ####  "context" property is specific to Azure OpenAI 
                 messageObj = {"role": "tool", "content": json.dumps(delta.context)}
                 response_obj["choices"][0]["messages"].append(messageObj)
                 return response_obj

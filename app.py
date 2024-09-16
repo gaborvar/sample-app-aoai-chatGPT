@@ -110,7 +110,6 @@ frontend_settings = {
 # Enable Microsoft Defender for Cloud Integration
 MS_DEFENDER_ENABLED = os.environ.get("MS_DEFENDER_ENABLED", "true").lower() == "true"
 
-data_from_chat = []     ### to store the list of contacts that the model parse from user input
 
 toolsdef_for_callback = [
     {
@@ -140,6 +139,10 @@ toolsdef_for_callback = [
                     "confirmedbyuser": {
                         "type": "boolean",
                         "description": "This confirms that the user reviewed and approved their contact details"
+                    },
+                    "contactpreference": {
+                        "type": "string",
+                        "description": "In case the user wants the call at a preferred time or expressed other preference for the contact call."
                     }
                 },
                 "additionalProperties": False,          # this is added in response to an errer, notdtocumented. "strict" had to be removed for same reason.
@@ -211,35 +214,7 @@ async def init_openai_client():
         azure_openai_client = None
         raise e
 
-async def read_fields_from_chat(response):
-    global data_from_chat
 
-    ########## Handling structured data received from the model.
-    ########## 
-    # Assuming 'response' is the object returned from OpenAI API
-
-    #### if 'function_call' in response['choices'][0]['message'] and response['choices'][0]['message']['function_call']['name'] == "contactlog":
-    ###     contact = response['choices'][0]['message']['function_call']['arguments']
-
-        # Here, you can choose to store the JSON, or process it further
-
-    ###    print(f"Arguments: {contact}")
-        
-        # If you want to store the data in a list or DataFrame
-    ###    data_from_chat.append(contact)  # Store the JSON data
-    
-    ###    return True
-
-    return False
-
-async def persist_fields_from_chat (data_from_chat):
-#####  Save data for later processing. For now, sale to a file.
-#####  Consider is an email alert is also appropriate.
-
-    with open("data_from_chat.json", "w") as file:
-        json.dump(data_from_chat, file, indent=4)
-    
-    return
 
 async def init_cosmosdb_client():
     cosmos_conversation_client = None
@@ -323,7 +298,7 @@ def prepare_model_args(request_body, request_headers):
     }
 
     if app_settings.datasource:
-        model_args["extra_body"] = {
+        model_args["extra_body"] = {            ####  "exrta_body" is specific to Azure OpenAI
             "data_sources": [
                 app_settings.datasource.construct_payload_configuration(
                     request=request
@@ -407,7 +382,7 @@ async def send_chat_request(request_body, request_headers):
     filtered_messages = []
     messages = request_body.get("messages", [])
     for message in messages:
-        if message.get("role") != 'tool':
+        if True:  ##### Stop excluding 'tool' messages. Was:   message.get("role") != 'tool':
             filtered_messages.append(message)
             
     request_body['messages'] = filtered_messages
@@ -437,7 +412,6 @@ async def complete_chat_request(request_body, request_headers):
         )
     else:
         response, apim_request_id = await send_chat_request(request_body, request_headers)
-        await read_fields_from_chat(response)
 
         history_metadata = request_body.get("history_metadata", {})
         return format_non_streaming_response(response, history_metadata, apim_request_id)
@@ -445,10 +419,6 @@ async def complete_chat_request(request_body, request_headers):
 
 async def stream_chat_request(request_body, request_headers):
     response, apim_request_id = await send_chat_request(request_body, request_headers)
-    print()
-    print (type(response))
-    print()
-    await read_fields_from_chat(response)
 
     history_metadata = request_body.get("history_metadata", {})
     
