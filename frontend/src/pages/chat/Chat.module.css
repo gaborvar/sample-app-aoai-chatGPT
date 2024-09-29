@@ -2,7 +2,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px; /* Adjust gap to reduce space */
+  padding-top: 0; /* Ensure no padding at the top */
 }
 
 .chatRoot {
@@ -44,8 +45,8 @@
   display: flex;
   align-items: flex-end;
   text-align: center;
-  line-height: 24px;
-  margin-top: 36px;
+  /* line-height: 24px; This seems to be incompatible with font-size which is larger */
+  margin-top: 18px;
   margin-bottom: 0px;
 }
 
@@ -64,6 +65,9 @@
 .chatIcon {
   height: 248px;
   width: auto;
+  margin-top: 18px;  /* Ensure clear space above */
+  margin-bottom: 18px;  /* Ensure clear space below */
+
 }
 
 .chatMessageStream {
@@ -390,9 +394,16 @@ a {
 
   .chatEmptyStateTitle {
     line-height: 36px;
+    margin-top: 6px;
   }
 
   .citationPanel {
     max-width: 100%;
+  }
+
+  .chatIcon {
+    height: 15vh; /* Reduce the height for mobile devices */
+    margin-top: 1vh; /* You can adjust or remove this */
+    margin-bottom: 1vh; /* You can adjust or remove this */
   }
 }

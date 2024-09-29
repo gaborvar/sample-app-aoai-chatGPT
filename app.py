@@ -145,7 +145,7 @@ toolsdef_for_callback = [
                         "description": "In case the user wants the call at a preferred time or expressed other preference for the contact call."
                     }
                 },
-                "additionalProperties": False,          # this is added in response to an errer, notdtocumented. "strict" had to be removed for same reason.
+                "additionalProperties": False,          # this field is added to mitigate an error, not based on OpenAI documentation. "strict" had to be removed for the same reason.
                 "required": ["firstname", "lastname", "phone", "email", "confirmedbyuser"]
             }
         }
@@ -298,7 +298,7 @@ def prepare_model_args(request_body, request_headers):
     }
 
     if app_settings.datasource:
-        model_args["extra_body"] = {            ####  "exrta_body" is specific to Azure OpenAI
+        model_args["extra_body"] = {            ####  "extra_body" is specific to Azure OpenAI
             "data_sources": [
                 app_settings.datasource.construct_payload_configuration(
                     request=request

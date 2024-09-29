@@ -1,3 +1,7 @@
 Firstname	Lastname	Phone	Email	ConfirmedByUser	Contactpreference
 Éva	Nagy	70-8956985	nagynagy@postaszolg.hu	TRUE	Csak délelõtt
 Béla	Nagy	06 52 956852	fhfgd@skjhf.com	TRUE	Délelõtt
+Géza	Molnár	20-8956985	nagyg@hotmail.hu	True	None
+Géza	Molnár	20-8956985	nagyg@hotmail.hu	True	None
+Géza	Kis	20-3432345	kisg@postalada.hu	True	None
+Béla	Kiss	06705455896	kbkb@gmail.com	True	None
